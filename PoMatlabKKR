@@ -1,0 +1,22 @@
+%% uzd.5.4
+clc, clearvars,format compact, close all                 % notīra komandu logu, izdzēš mainīgos, kompaktāks izvads, aizver figūras
+
+syms t, y = @(t)(sqrt(1+t.^4));                          % simboliskais t (nav obligāts) un anonīmā funkcija y(t)=sqrt(1+t^4)
+i = 0;                                                   % indeksa inicializācija tabulas veidošanai
+for x = 0:0.25:3                                         % ejam cauri x no 0 līdz 3 ar soli 0.25
+    i = i+1;                                             % palielinām rindu skaitītāju
+    f(i) = integral(y,0,x);                              % aprēķinām f(x)=∫_0^x sqrt(1+t^4) dt (skaitliska integrācija)
+end
+
+xpoints = (0.0:0.25:3)';                                 % x vērtību kolonna
+ypoints = f';                                            % atbilstošo f(x) vērtību kolonna
+
+[p,reg] = fit(xpoints,ypoints,'poly2')                   % pielāgo 2. kārtas polinomu: p(x)=p1*x^2+p2*x+p3 (reg – statistika)
+plot(p,xpoints,ypoints),grid on                          % uzzīmē polinomu kopā ar punktiem; ieslēdz režģi
+title('Aproksimācija ar otrās kārtas polinomu')          % grafika virsraksts
+% -> Ja vajag koeficientu pie x^2 (pēc jautājuma punktā 1.), tas ir p.p1   %
+
+% 5.7. piemēra turpinājums (novērtējums dotajā punktā un kļūda)
+pol_ver = p(1.65);                                       % polinoma vērtība x0=1.65
+f_ver = integral(y,0,1.65);                              % īstās funkcijas f(x)=∫_0^x ... vērtība punktā x0=1.65
+aproks_kluda = abs(pol_ver - f_ver)                      % aproksimācijas kļūda |p(x0) - f(x0)|
