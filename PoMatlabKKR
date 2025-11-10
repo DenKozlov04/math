@@ -1,22 +1,117 @@
-%% uzd.5.4
-clc, clearvars,format compact, close all                 % notīra komandu logu, izdzēš mainīgos, kompaktāks izvads, aizver figūras
+clc, clearvars,format compact, close all                 % notīra komandu logu, izdzēš visas mainīgās, kompaktāks izvads, aizver visas figūras
 
-syms t, y = @(t)(sqrt(1+t.^4));                          % simboliskais t (nav obligāts) un anonīmā funkcija y(t)=sqrt(1+t^4)
-i = 0;                                                   % indeksa inicializācija tabulas veidošanai
-for x = 0:0.25:3                                         % ejam cauri x no 0 līdz 3 ar soli 0.25
-    i = i+1;                                             % palielinām rindu skaitītāju
-    f(i) = integral(y,0,x);                              % aprēķinām f(x)=∫_0^x sqrt(1+t^4) dt (skaitliska integrācija)
+
+
+xpoints=[0:0.25:2];                                      % x vērtības ar soli 0.25 (datu punkti)
+
+ypoints=[20.00 51.58 68.73 75.46 74.36 67.09 54.73 37.98 17.28]; % y vērtības (funkcijas vērtības tabulā)
+
+
+
+plot(xpoints,ypoints,'or','LineWidth',3)                 % uzzīmē sākotnējos datu punktus (sarkani aplīši)
+
+grid on                                                  % ieslēdz režģi
+
+title('Datu punkti')                                     % grafika virsraksts
+
+
+
+p = polyfit(xpoints,ypoints,1)                           % atrod 1. kārtas (lineārā) polinoma koeficientus
+
+xapprox = 0:0.01:2; yapprox = polyval(p,xapprox);         % izveido blīvu x režģi un aprēķina polinoma vērtības
+
+
+
+figure                                                   % atver jaunu figūru
+
+plot(xpoints,ypoints,'or',xapprox,yapprox,'k','LineWidth',3) % uzzīmē datu punktus un lineāro aproksimāciju
+
+legend('datu punkti','polinoms')                         % leģenda
+
+title('Aproksimācija ar pirmās kārtas polinomu'),grid on % virsraksts un režģis
+
+fun_prob1(p)                                             % izdrukā polinomu pēc atrastajiem koeficientiem
+
+
+
+% ----- Aproksimācija ar 2. kārtas polinomu -----
+
+p = polyfit(xpoints,ypoints,2), yapprox = polyval(p,xapprox); % atrod 2. kārtas polinomu un tā vērtības
+
+figure                                                   % jauna figūra
+
+plot(xpoints,ypoints,'or',xapprox,yapprox,'k','LineWidth',3) % datu punkti un kvadrātiskais polinoms
+
+legend('datu punkti','polinoms')                         % leģenda
+
+title('Aproksimācija ar otrās kārtas polinomu')          % virsraksts
+
+grid on                                                  % režģis
+
+fun_prob1(p)                                             % izdrukā 2. kārtas polinomu
+
+
+
+p = polyfit(xpoints,ypoints,3)                           % atrod 3. kārtas polinomu
+
+xapprox = 0:0.01:2; yapprox = polyval(p,xapprox);         % aprēķina polinoma vērtības jaunajā režģī
+
+figure                                                   % jauna figūra
+
+plot(xpoints,ypoints,'or',xapprox,yapprox,'k','LineWidth',3) % datu punkti un kubiskais polinoms
+
+legend('datu punkti','polinoms')                         % leģenda
+
+title('Aproksimācija ar 3.kārtas polinomu'),grid on      % virsraksts un režģis
+
+fun_prob1(p)                                             % izdrukā 3. kārtas polinomu
+
+
+
+p = polyfit(xpoints,ypoints,4)                           % atrod 4. kārtas polinomu
+
+xapprox = 0:0.01:2; yapprox = polyval(p,xapprox);         % aprēķina 4. kārtas polinomu
+
+figure                                                   % jauna figūra
+
+plot(xpoints,ypoints,'or',xapprox,yapprox,'k','LineWidth',3) % datu punkti un 4. kārtas polinoms
+
+legend('datu punkti','polinoms')                         % leģenda
+
+title('Aproksimācija ar 4.kārtas polinomu'),grid on      % virsraksts un režģis
+
+fun_prob1(p)                                             % izdrukā 4. kārtas polinomu
+
+
+
+% ===== Funkcija polinoma izdrukāšanai =====
+
+function fun_prob1(koef)
+
+m = length(koef);                                        % koeficientu skaits (polinoma kārta + 1)
+
+fprintf('\n Atbilde. %.0f.kārtas polinoms: \n ',m-1)     % izvada polinoma kārtu
+
+n = m-1;                                                 % sākam drukāt no augstākās pakāpes
+
+for i = 1:m                                              % ejam cauri visiem koeficientiem
+
+    if koef(i) < 0                                       % ja koeficients negatīvs – mīnuss jau ir klāt
+
+        fprintf(' %.4fx^%.0f',koef(i),n)                 % izdrukā terminu ar negatīvu koeficientu
+
+    else                                                 % ja koeficients pozitīvs
+
+        fprintf(' +')                                    % pievieno plusa zīmi
+
+        fprintf('%.4fx^%.0f',koef(i),n)                  % izdrukā terminu ar pozitīvu koeficientu
+
+    end
+
+    n = n-1;                                             % samazina pakāpi par 1
+
 end
 
-xpoints = (0.0:0.25:3)';                                 % x vērtību kolonna
-ypoints = f';                                            % atbilstošo f(x) vērtību kolonna
+fprintf('\n')                                            % pāreja jaunā rindā pēc polinoma
 
-[p,reg] = fit(xpoints,ypoints,'poly2')                   % pielāgo 2. kārtas polinomu: p(x)=p1*x^2+p2*x+p3 (reg – statistika)
-plot(p,xpoints,ypoints),grid on                          % uzzīmē polinomu kopā ar punktiem; ieslēdz režģi
-title('Aproksimācija ar otrās kārtas polinomu')          % grafika virsraksts
-% -> Ja vajag koeficientu pie x^2 (pēc jautājuma punktā 1.), tas ir p.p1   %
-
-% 5.7. piemēra turpinājums (novērtējums dotajā punktā un kļūda)
-pol_ver = p(1.65);                                       % polinoma vērtība x0=1.65
-f_ver = integral(y,0,1.65);                              % īstās funkcijas f(x)=∫_0^x ... vērtība punktā x0=1.65
-aproks_kluda = abs(pol_ver - f_ver)                      % aproksimācijas kļūda |p(x0) - f(x0)|
+end
